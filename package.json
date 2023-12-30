@@ -1,8 +1,8 @@
 {
   "name": "pixlcms-wrapper",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A wrapper package with utility functionality to be used with pixlmints pixl-cms",
-  "main": "index.js",
+  "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
