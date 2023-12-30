@@ -1,6 +1,6 @@
 {
   "name": "pixlcms-wrapper",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A wrapper package with utility functionality to be used with pixlmints pixl-cms",
   "main": "index.js",
   "scripts": {
@@ -11,5 +11,10 @@
     "url": "git+https://github.com/pixlmint/node-pixlcms-wrapper.git"
   },
   "author": "christiangroeber",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.5.1",
+    "@fortawesome/vue-fontawesome": "^3.0.5",
+    "vue": "^3.4.3"
+  }
 }
