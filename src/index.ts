@@ -8,7 +8,7 @@ import Dialog from "./components/dialog.vue";
 export {
     useLoadingStore,
     Icon,
-    loading,
+    loading as Loading,
     Dialog,
     DialogComponent,
     PixlEntry,
