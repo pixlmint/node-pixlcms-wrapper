@@ -1,0 +1,12 @@
+{
+  "name": "pixlcms-wrapper",
+  "version": "1.0.0",
+  "description": "A wrapper package with utility functionality to be used with pixlmints pixl-cms",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": "https://github.com/pixlmint/node-pixlcms-wrapper",
+  "author": "christiangroeber",
+  "license": "MIT"
+}
