@@ -7,7 +7,7 @@
 <script lang="ts">
 import {defineComponent, ref} from "vue";
 import {ElDialog} from "element-plus";
-import {useDialogStore} from "../../journal/app/src/store/dialog";
+import {useDialogStore} from "../store/dialog";
 
 export default defineComponent({
     name: 'PMDialog',
