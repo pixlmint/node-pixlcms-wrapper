@@ -31,8 +31,8 @@ export const useDialogStore = defineStore('dialog', {
         showingDialogs: showingDialogs,
     }),
     getters: {
-        getShowingDialogs: state => state.showingDialogs,
-        getDialogData: (state) => (route: string) => {
+        getShowingDialogs: (state: State) => state.showingDialogs,
+        getDialogData: (state: State) => (route: string) => {
             const dialog = state.showingDialogs.dialogs.find(d => d.route === route);
             return dialog ? dialog.data : null;
         },

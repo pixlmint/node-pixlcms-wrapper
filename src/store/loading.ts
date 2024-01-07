@@ -15,10 +15,10 @@ export const useLoadingStore = defineStore('loadingStore', {
         estimatedProgress: 0,
     }),
     getters: {
-        getLoadingCount: state => state.loadingCount,
-        getLoadingTime: state => state.loadingTime,
-        getTimePassed: state => state.timePassed,
-        getEstimatedProgress: state => state.estimatedProgress,
+        getLoadingCount: (state: State) => state.loadingCount,
+        getLoadingTime: (state: State) => state.loadingTime,
+        getTimePassed: (state: State) => state.timePassed,
+        getEstimatedProgress: (state: State) => state.estimatedProgress,
     },
     actions: {
         increaseLoadingCount() {
