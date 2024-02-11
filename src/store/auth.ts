@@ -27,7 +27,7 @@ export const useAuthStore = defineStore('authStore', {
             const request = buildRequest('/api/auth/request-new-password', data, 'POST');
             return send(request);
         },
-        restorePassword(data: object) {
+        restorePassword(data: {username: string, password1: string, password2: string, token: string}) {
             const request = buildRequest('/api/auth/restore-password', data, 'POST');
             return send(request).then((response) => {
                 this.token = response.data.token;
@@ -45,6 +45,10 @@ export const useAuthStore = defineStore('authStore', {
                 this.setToken(response.data.token);
             });
         },
+        createAdmin(data: object) {
+            const request = buildRequest('/api/auth/create-admin', data, 'POST');
+            return send(request);
+        },
         loadToken() {
             const token = localStorage.getItem('token');
             if (token) {
@@ -55,6 +59,9 @@ export const useAuthStore = defineStore('authStore', {
         logout() {
             this.token = null;
             localStorage.removeItem('token');
+        },
+        haveEditRights() {
+            return this.token !== null;
         },
     },
 })

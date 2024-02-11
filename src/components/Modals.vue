@@ -11,8 +11,8 @@
 
 <script lang="ts">
 import {defineComponent, computed} from "vue";
-import {useDialogStore} from "@/src/store/dialog";
-import {DialogComponent} from "@/src/contracts/Dialog";
+import {useDialogStore} from "../store/dialog";
+import {DialogComponent} from "../contracts/DialogComponent";
 
 export default defineComponent({
     name: 'Modals',

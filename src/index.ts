@@ -6,6 +6,7 @@ import Dialog from "./components/dialog.vue";
 import Modals from "./components/Modals.vue";
 import {defineDialogs} from "./helpers/functions";
 import {useAuthStore} from "./store/auth";
+import {configureStores, buildRequest, send} from './helpers/xhr';
 
 const main = {
     install: (app, options = {}) => {
@@ -19,18 +20,21 @@ const main = {
         const authStore = useAuthStore(pinia);
         const loadingStore = useLoadingStore(pinia);
     },
-
 };
 
 export {
     useLoadingStore,
     useDialogStore,
+    useAuthStore,
     Icon,
     Loading,
     Dialog,
     Modals,
     defineDialogs,
     main,
+    configureStores,
+    buildRequest,
+    send,
 }
 
 export type {PixlEntry, EntryMeta} from "./contracts/PixlEntry";

@@ -1,6 +1,9 @@
 <template>
     <el-dialog :title="title" v-model="isVisible" :fullscreen="fullscreen" @close="handleClose">
         <slot></slot>
+        <template #footer>
+            <slot name="footer"></slot>
+        </template>
     </el-dialog>
 </template>
 
