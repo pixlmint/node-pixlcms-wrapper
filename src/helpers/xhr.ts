@@ -1,14 +1,7 @@
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import {queryFormatter} from "./utils";
 import LoadingHelper from "./loading";
 import {ElNotification} from "element-plus";
-
-interface JournalAPIRequest {
-    url: string,
-    method: string,
-    data: string | FormData,
-    headers: object,
-}
 
 const updateSpeed = 10;
 
@@ -22,16 +15,19 @@ export function configureStores(newAuthStore, newLoadingStore) {
     loadingStore = newLoadingStore;
 }
 
-export function buildRequest(url: string, data: object = {}, method: string = 'GET'): JournalAPIRequest {
+export function buildRequest(url: string, data: object = {}, method: string = 'GET'): AxiosRequestConfig {
     method = method.toUpperCase();
     const request = {
         url: url,
         method: method,
         data: data,
         headers: {},
-    } as JournalAPIRequest;
+        validateStatus: function (status) {
+            return status >= 200 && status < 300;
+        },
+    } as AxiosRequestConfig;
     if (authStore.getToken !== null) {
-        request.headers.pixltoken = authStore.getToken;
+        request.headers['pixltoken'] = authStore.getToken;
     }
     if (method === 'GET') {
         request.url = url + '?' + queryFormatter(data);
@@ -69,7 +65,7 @@ function updateLoadingProgress() {
     }
 }
 
-export function send(request) {
+export function send(request: AxiosRequestConfig) {
     const startTime = new Date();
     if (loadingStore !== null) {
         loadingStore.increaseLoadingCount();

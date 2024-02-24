@@ -1,6 +1,6 @@
 {
   "name": "pixlcms-wrapper",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A wrapper package with utility functionality to be used with pixlmints pixl-cms",
   "main": "src/index.ts",
   "types": "src/index.ts",
