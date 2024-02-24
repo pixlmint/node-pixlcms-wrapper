@@ -100,6 +100,6 @@ export function send(request: AxiosRequestConfig) {
                     window.clearInterval(loadingBarInterval);
                 }
             }
-            return reason;
+            throw reason;
         });
 }
