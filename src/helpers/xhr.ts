@@ -1,4 +1,4 @@
-import axios, {AxiosRequestConfig} from "axios";
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
 import {queryFormatter} from "./utils";
 import LoadingHelper from "./loading";
 import {ElNotification} from "element-plus";
@@ -75,7 +75,7 @@ export function send(request: AxiosRequestConfig) {
         }
     }
     return axios(request)
-        .then((response) => {
+        .then((response: AxiosResponse) => {
             if (loadingStore !== null) {
                 loadingStore.decreaseLoadingCount();
             }
@@ -84,7 +84,7 @@ export function send(request: AxiosRequestConfig) {
             LoadingHelper.updateAverageLoadingTime(request.url, diff);
             return response;
         })
-        .catch((reason) => {
+        .catch((reason: AxiosError) => {
             let message = 'Error Sending Request to ' + request.url;
             if ('message' in reason.response.data) {
                 message = reason.response.data.message;
