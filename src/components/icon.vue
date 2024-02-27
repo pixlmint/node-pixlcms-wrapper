@@ -1,5 +1,5 @@
 <template>
-    <FontAwesomeIcon :icon="`fa-solid fa-${icon}`"/>
+    <FontAwesomeIcon :icon="`fa-${package} fa-${icon}`"/>
 </template>
 
 <script lang="ts">
@@ -8,7 +8,17 @@ import {defineComponent} from "vue";
 
 export default defineComponent({
     name: 'PMIcon',
-    props: ['icon'],
+    props: {
+        icon: {
+            required: true,
+            type: String,
+        },
+        package: {
+            required: false,
+            default: 'solid',
+            type: String,
+        },
+    },
     components: {
         FontAwesomeIcon,
     }
