@@ -56,9 +56,17 @@ export const useAuthStore = defineStore('authStore', {
             }
             return token;
         },
-        logout() {
-            this.token = null;
-            localStorage.removeItem('token');
+        logout(logoutEverywhere: boolean = false) {
+            if (logoutEverywhere) {
+                const request = buildRequest('/api/auth/destroy-token');
+                send(request).then(() => {
+                    this.token = null;
+                    localStorage.removeItem('token');
+                });
+            } else {
+                this.token = null;
+                localStorage.removeItem('token');
+            }
         },
         haveEditRights() {
             return this.token !== null;
