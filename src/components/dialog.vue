@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" v-model="isVisible" :fullscreen="fullscreen" @close="handleClose">
+    <el-dialog @scroll="handleScroll" :title="title" v-model="isVisible" :fullscreen="fullscreen" @close="handleClose">
         <slot></slot>
         <template #footer>
             <slot name="footer"></slot>
@@ -22,12 +22,16 @@ export default defineComponent({
         const dialogStore = useDialogStore();
         const isVisible = ref(true);
 
+        const handleScroll = (event: MouseEvent) => {
+            dialogStore.dialogScrollHeight = event.y;
+        }
+
         const handleClose = () => {
             dialogStore.hideDialog(props.route);
             emit('close');
         };
 
-        return {isVisible, handleClose};
+        return {isVisible, handleClose, handleScroll};
     }
 });
 </script>

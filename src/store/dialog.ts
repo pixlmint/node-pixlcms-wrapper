@@ -13,6 +13,7 @@ interface DialogInfoList {
 
 interface State {
     showingDialogs: DialogInfoList,
+    dialogScrollHeight?: number,
 }
 
 const instanceOfDialogInfo = (dialog: any) => {
@@ -32,6 +33,7 @@ export const useDialogStore = defineStore('dialog', {
     }),
     getters: {
         getShowingDialogs: (state: State) => state.showingDialogs,
+        getDialogScrollHeight: (state: State) => state.dialogScrollHeight === null ? 0 : state.dialogScrollHeight,
         getDialogData: (state: State) => (route: string) => {
             const dialog = state.showingDialogs.dialogs.find(d => d.route === route);
             return dialog ? dialog.data : null;

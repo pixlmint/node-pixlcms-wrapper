@@ -1,6 +1,6 @@
 {
   "name": "pixlcms-wrapper",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "A wrapper package with utility functionality to be used with pixlmints pixl-cms",
   "main": "src/index.ts",
   "types": "src/index.ts",
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/pixlmint/node-pixlcms-wrapper.git"
   },
-  "author": "christiangroeber",
+  "author": "Christian Gröber",
   "license": "MIT",
   "dependencies": {
     "@babel/runtime": "^7.23.7",
