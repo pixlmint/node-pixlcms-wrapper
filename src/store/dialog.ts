@@ -1,9 +1,11 @@
 import {defineStore} from "pinia";
 import {isObject} from "lodash";
+import { Callback } from "element-plus";
 
 interface DialogInfo {
     route: string,
     data?: any,
+    closeCallback?: Callback,
 }
 
 interface DialogInfoList {
@@ -42,7 +44,7 @@ export const useDialogStore = defineStore('dialog', {
     actions: {
         showDialog(dialog: any) {
             if (!instanceOfDialogInfo(dialog)) {
-                dialog = {route: dialog, data: null};
+                dialog = {route: dialog, data: null, closeCallback: null};
             }
             this.showingDialogs.dialogs.push(dialog);
         },
@@ -50,8 +52,11 @@ export const useDialogStore = defineStore('dialog', {
             return this.showingDialogs.dialogs.find(d => d.route === route) !== undefined;
         },
         hideDialog(route: string) {
-            const index = this.showingDialogs.dialogs.findIndex(dialog => dialog.route === route);
+            const index = this.showingDialogs.dialogs.findIndex((dialog: DialogInfo) => dialog.route === route);
             if (index !== -1) {
+                if (this.showingDialogs.dialogs[index].closeCallback !== null) {
+                    this.showingDialogs.dialogs[index].closeCallback();
+                }
                 this.showingDialogs.dialogs.splice(index, 1);
             }
         },

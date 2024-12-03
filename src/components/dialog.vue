@@ -1,5 +1,5 @@
 <template>
-    <el-dialog @scroll="handleScroll" :title="title" v-model="isVisible" :fullscreen="fullscreen" @close="handleClose">
+    <el-dialog :title="title" v-model="isVisible" :fullscreen="fullscreen" @close="handleClose">
         <slot></slot>
         <template #footer>
             <slot name="footer"></slot>
@@ -7,31 +7,37 @@
     </el-dialog>
 </template>
 
-<script lang="ts">
-import {defineComponent, ref} from "vue";
+
+<script lang="ts" setup>
+import {defineComponent, onMounted, ref} from "vue";
 import {ElDialog} from "element-plus";
 import {useDialogStore} from "../store/dialog";
 
+const props = defineProps(['title', 'fullscreen', 'route']);
+const emit = defineEmits(['close']);
+const isVisible = ref(true);
+const dialogStore = useDialogStore();
+
+const handleScroll = (event: MouseEvent) => {
+    // @ts-ignore
+    dialogStore.dialogScrollHeight = event.target.scrollTop;
+}
+
+onMounted(() => {
+    // @ts-ignore
+    document.querySelector('.el-overlay-dialog').addEventListener('scroll', handleScroll);
+});
+
+const handleClose = () => {
+    dialogStore.hideDialog(props.route);
+    emit('close');
+};
+
+</script>
+
+<script lang="ts">
+
 export default defineComponent({
     name: 'PMDialog',
-    components: {
-        ElDialog
-    },
-    props: ['title', 'fullscreen', 'route'],
-    setup(props, {emit}) {
-        const dialogStore = useDialogStore();
-        const isVisible = ref(true);
-
-        const handleScroll = (event: MouseEvent) => {
-            dialogStore.dialogScrollHeight = event.y;
-        }
-
-        const handleClose = () => {
-            dialogStore.hideDialog(props.route);
-            emit('close');
-        };
-
-        return {isVisible, handleClose, handleScroll};
-    }
 });
 </script>
