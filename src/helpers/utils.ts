@@ -5,6 +5,7 @@ export const queryFormatter = (obj: object, prefix?: any) => {
         if (obj.hasOwnProperty(p)) {
             let k = prefix ? prefix + "[" + p + "]" : p,
                 v = obj[p];
+            // @ts-ignore
             str.push((v !== null && typeof v === "object") ?
                 queryFormatter(v, k) :
                 encodeURIComponent(k) + "=" + encodeURIComponent(v));

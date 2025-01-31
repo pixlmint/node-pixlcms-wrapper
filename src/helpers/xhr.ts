@@ -1,21 +1,26 @@
-import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from "axios";
+import axios, {type AxiosError, type AxiosRequestConfig, type AxiosResponse} from "axios";
 import {queryFormatter} from "./utils";
 import LoadingHelper from "./loading";
 import {ElNotification} from "element-plus";
+import { type LoadingStore } from '../store/loading';
+import { type AuthStore } from '../store/auth';
 
 const updateSpeed = 10;
 
-let loadingBarInterval = null;
+let loadingBarInterval: number|null = null;
 
-let authStore = null;
-let loadingStore = null;
+let authStore: AuthStore|null = null;
+let loadingStore: LoadingStore|null = null;
 
-export function configureStores(newAuthStore, newLoadingStore) {
+export function configureStores(newAuthStore: any, newLoadingStore: any) {
     authStore = newAuthStore;
     loadingStore = newLoadingStore;
 }
 
 export function buildRequest(url: string, data: object = {}, method: string = 'GET'): AxiosRequestConfig {
+    if (authStore === null || loadingStore === null) {
+        throw "Stores must be defined";
+    }
     method = method.toUpperCase();
     const request = {
         url: url,
@@ -26,6 +31,9 @@ export function buildRequest(url: string, data: object = {}, method: string = 'G
             return status >= 200 && status < 300;
         },
     } as AxiosRequestConfig;
+    if (!request.headers) {
+        throw "Headers not defined";
+    }
     if (authStore.getToken !== null) {
         request.headers['pixltoken'] = authStore.getToken;
     }
@@ -44,6 +52,8 @@ export function buildRequest(url: string, data: object = {}, method: string = 'G
 }
 
 function clearProgressBar() {
+    if (loadingStore === null) throw "loadingStore is undefined";
+    if (loadingBarInterval === null) throw "loadingBarInterval is null";
     const estimated = loadingStore.getEstimatedProgress;
     if (estimated >= 100) {
         loadingStore.resetLoadingBar();
@@ -55,6 +65,8 @@ function clearProgressBar() {
 }
 
 function updateLoadingProgress() {
+    if (loadingStore === null) throw "loadingStore undefined";
+    if (loadingBarInterval === null) throw "loadingBarInterval is null";
     loadingStore.increaseTimePassed(updateSpeed);
     const newProgress = 100 / loadingStore.getLoadingTime * loadingStore.getTimePassed;
     loadingStore.updateEstimatedProgress(newProgress);
@@ -80,13 +92,15 @@ export function send(request: AxiosRequestConfig) {
                 loadingStore.decreaseLoadingCount();
             }
             const endTime = new Date();
-            const diff = endTime - startTime;
+            const diff = endTime.getSeconds() - startTime.getSeconds();
             LoadingHelper.updateAverageLoadingTime(request.url, diff);
             return response;
         })
         .catch((reason: AxiosError) => {
             let message = 'Error Sending Request to ' + request.url;
+            // @ts-ignore
             if ('message' in reason.response.data) {
+                // @ts-ignore
                 message = reason.response.data.message;
             }
             ElNotification({
@@ -97,7 +111,7 @@ export function send(request: AxiosRequestConfig) {
             if (loadingStore !== null) {
                 loadingStore.decreaseLoadingCount();
                 if (loadingStore.getLoadingTime === 0) {
-                    window.clearInterval(loadingBarInterval);
+                    if (loadingBarInterval !== null) window.clearInterval(loadingBarInterval);
                 }
             }
             throw reason;

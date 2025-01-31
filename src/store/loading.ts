@@ -7,6 +7,19 @@ interface State {
     estimatedProgress: number,
 }
 
+export type LoadingStore = {
+    getLoadingCount: number,
+    getLoadingTime: number,
+    getTimePassed: number,
+    getEstimatedProgress: number,
+    resetLoadingBar: Function,
+    updateEstimatedProgress: Function,
+    increaseTimePassed: Function,
+    increaseLoadingCount: Function,
+    increaseLoadingTime: Function,
+    decreaseLoadingCount: Function,
+}
+
 export const useLoadingStore = defineStore('loadingStore', {
     state: (): State => ({
         loadingCount: 0,

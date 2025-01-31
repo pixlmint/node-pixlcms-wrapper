@@ -5,6 +5,20 @@ interface State {
     token: string | null,
 }
 
+export type AuthStore = {
+    getToken: null|string,
+    setToken: Function,
+    changePassword: Function,
+    requestNewPassword: Function,
+    restorePassword: Function,
+    generateNewToken: Function,
+    login: Function,
+    createAdmin: Function,
+    loadToken: Function,
+    logout: Function,
+    haveEditRights: Function,
+}
+
 export const useAuthStore = defineStore('authStore', {
     state: (): State => ({
         token: null,
@@ -17,33 +31,29 @@ export const useAuthStore = defineStore('authStore', {
             this.token = token;
             localStorage.setItem('token', token.toString());
         },
-        changePassword(data: object) {
+        async changePassword(data: object) {
             const request = buildRequest('/api/auth/change-password', data, 'POST');
-            return send(request).then((response) => {
-                this.token = response.data.token;
-            });
+            const response = await send(request);
+            this.token = response.data.token;
         },
         requestNewPassword(data: object) {
             const request = buildRequest('/api/auth/request-new-password', data, 'POST');
             return send(request);
         },
-        restorePassword(data: {username: string, password1: string, password2: string, token: string}) {
+        async restorePassword(data: {username: string, password1: string, password2: string, token: string}) {
             const request = buildRequest('/api/auth/restore-password', data, 'POST');
-            return send(request).then((response) => {
-                this.token = response.data.token;
-            });
+            const response = await send(request);
+            this.token = response.data.token;
         },
-        generateNewToken() {
+        async generateNewToken() {
             const request = buildRequest('/api/auth/generate-new-token', {}, 'POST');
-            return send(request).then(response => {
-                this.setToken(response.data.token);
-            });
+            const response = await send(request);
+            this.setToken(response.data.token);
         },
-        login(data: object) {
+        async login(data: object) {
             const request = buildRequest('/api/auth/login', data, 'POST');
-            return send(request).then(response => {
-                this.setToken(response.data.token);
-            });
+            const response = await send(request);
+            this.setToken(response.data.token);
         },
         createAdmin(data: object) {
             const request = buildRequest('/api/auth/create-admin', data, 'POST');
