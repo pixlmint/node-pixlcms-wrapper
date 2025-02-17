@@ -5,8 +5,9 @@ import Loading from "./components/Loading.vue";
 import Dialog from "./components/dialog.vue";
 import Modals from "./components/Modals.vue";
 import {defineDialogs} from "./helpers/functions";
-import {useAuthStore} from "./store/auth";
+import { useAuthStore, type AuthStore } from "./store/auth";
 import {configureStores, buildRequest, send} from './helpers/xhr';
+import { useMediaStore, type MediaStore } from "./store/media";
 
 const main = {
     install: (app, options = {}) => {
@@ -26,6 +27,9 @@ export {
     useLoadingStore,
     useDialogStore,
     useAuthStore,
+    useMediaStore,
+    MediaStore,
+    AuthStore,
     Icon,
     Loading,
     Dialog,
