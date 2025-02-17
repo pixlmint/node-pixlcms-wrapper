@@ -46,6 +46,9 @@ export const useDialogStore = defineStore('dialog', {
             if (!instanceOfDialogInfo(dialog)) {
                 dialog = {route: dialog, data: null, closeCallback: null};
             }
+            if (dialog.closeCallback === undefined) {
+                dialog.closeCallback = null;
+            }
             this.showingDialogs.dialogs.push(dialog);
         },
         isDialogShowing(route: string) {
