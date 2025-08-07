@@ -18,6 +18,12 @@ interface State {
     dialogScrollHeight?: number,
 }
 
+type ShowDialogType = {
+    route: string,
+    data: null | Object,
+    closeCallback: null | Function,
+} | string;
+
 const instanceOfDialogInfo = (dialog: any) => {
     return isObject(dialog) && 'route' in dialog;
 }
@@ -42,7 +48,7 @@ export const useDialogStore = defineStore('dialog', {
         },
     },
     actions: {
-        showDialog(dialog: any) {
+        showDialog(dialog: ShowDialogType) {
             if (!instanceOfDialogInfo(dialog)) {
                 dialog = {route: dialog, data: null, closeCallback: null};
             }
