@@ -1,8 +1,10 @@
 import { defineStore } from 'pinia';
 import { buildRequest, send } from "../helpers/xhr";
+import { Backend } from './backend';
 
 interface State {
     gallery: object[],
+    backend: Backend | null,
 }
 
 export type MediaStore = {
@@ -12,25 +14,30 @@ export type MediaStore = {
     deleteMedia: Function,
 }
 
-export const useMediaStore = defineStore('mediaStore', {
+export const mediaStoreConfig = {
     state: (): State => ({
         gallery: [],
+        backend: null,
     }),
     getters: {},
     actions: {
+        _buildRequest: buildRequest,
         async loadMediaForEntry(entry: string) {
-            const request = buildRequest('/api/admin/gallery/load', {gallery: entry});
+            const request = this._buildRequest({ url: '/api/admin/gallery/load', data: { gallery: entry } });
             return send(request).then((response) => {
                 this.gallery = response.data.media;
             });
         },
-        uploadMedia(data: FormData) {
-            const request = buildRequest('/api/admin/gallery/upload', data, 'POST');
+        uploadMedia(data: FormData | {files: object[], gallery: string}) {
+            const request = this._buildRequest({ url: '/api/admin/gallery/upload', data, method: 'POST' });
             return send(request)
         },
         deleteMedia(mediaString: string) {
-            const request = buildRequest('/api/admin/gallery/delete', {media: mediaString}, 'DELETE');
+            const request = this._buildRequest({ url: '/api/admin/gallery/delete', data: { media: mediaString }, method: 'DELETE' });
             return send(request);
         },
     },
-});
+}
+
+export const useMediaStore = defineStore('mediaStore', mediaStoreConfig);
+
