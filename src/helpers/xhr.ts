@@ -1,59 +1,26 @@
-import axios, { type AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
+import axios, { AxiosRequestHeaders, type AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
 import { queryFormatter } from "./utils";
 import LoadingHelper from "./loading";
 import { ElNotification } from "element-plus";
 import { type LoadingStore } from '../store/loading';
-import { type AuthStore } from '../store/auth';
 
 const updateSpeed = 10;
 
 let loadingBarInterval: number | null = null;
 
-let authStore: AuthStore | null = null;
 let loadingStore: LoadingStore | null = null;
 
 const runningRequests: Record<string, Promise<any>> = {};
 
-export function configureStores(newAuthStore: any, newLoadingStore: any) {
-    authStore = newAuthStore;
+export function configureStores(newLoadingStore: any) {
     loadingStore = newLoadingStore;
 }
 
-export type BuildRequestArgObject = {
-    url: string;
-    data?: object;
-    method?: 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT';
-    domain?: string | null;
-    token?: string | null;
-}
-
 export function buildRequest(
-    configOrUrl: BuildRequestArgObject | string,
+    url: string,
     data: Object = {},
     method: 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT' = 'GET',
-    domain?: string,
-    token: string | null = null,
-): AxiosRequestConfig {
-    if (authStore === null || loadingStore === null) {
-        throw "Stores must be defined";
-    }
-    console.log(configOrUrl);
-    let url: string;
-    if (typeof configOrUrl === 'string') {
-        url = configOrUrl;
-    } else {
-        /** @type {BuildRequestArgObject} configOrUrl */
-        url = configOrUrl.url;
-        if (configOrUrl.method !== undefined)
-            method = configOrUrl.method;
-        if (configOrUrl.data !== undefined)
-            data = configOrUrl.data;
-        if (configOrUrl.domain !== undefined && configOrUrl.domain !== null)
-            domain = configOrUrl.domain as string;
-        if (configOrUrl.token !== undefined && configOrUrl.token !== null)
-            token = configOrUrl.token as string;
-    }
-    console.log(domain);
+): AxiosRequestConfig & { headers: AxiosRequestHeaders } {
     method = method.toUpperCase();
     const request = {
         url: url,
@@ -63,21 +30,7 @@ export function buildRequest(
         validateStatus: function(status) {
             return status >= 200 && status < 300;
         },
-    } as AxiosRequestConfig;
-    if (domain !== null) {
-        request.baseURL = domain;
-    }
-    if (!request.headers) {
-        throw "Headers not defined";
-    }
-    if (token === null) {
-        if (authStore.getToken !== null) {
-            token = authStore.getToken;
-        }
-    }
-    if (token !== null) {
-        request.headers['pixltoken'] = token;
-    }
+    } as AxiosRequestConfig & { headers: AxiosRequestHeaders };
     if (method === 'GET') {
         request.url = url + '?' + queryFormatter(data);
     } else {
@@ -93,7 +46,7 @@ export function buildRequest(
 }
 
 function clearProgressBar() {
-    if (loadingStore === null) throw "loadingStore is undefined";
+    if (loadingStore === null) return;
     if (loadingBarInterval === null) throw "loadingBarInterval is null";
     const estimated = loadingStore.getEstimatedProgress;
     if (estimated >= 100) {
@@ -106,7 +59,7 @@ function clearProgressBar() {
 }
 
 function updateLoadingProgress() {
-    if (loadingStore === null) throw "loadingStore undefined";
+    if (loadingStore === null) return;
     if (loadingBarInterval === null) throw "loadingBarInterval is null";
     loadingStore.increaseTimePassed(updateSpeed);
     const newProgress = 100 / loadingStore.getLoadingTime * loadingStore.getTimePassed;
@@ -146,10 +99,8 @@ export async function send(request: AxiosRequestConfig, suppressWarnings: boolea
         .catch((reason: AxiosError) => {
             if (!suppressWarnings) {
                 let message = 'Error Sending Request to ' + request.url;
-                // @ts-ignore
-                if ('message' in reason.response.data) {
-                    // @ts-ignore
-                    message = reason.response.data.message;
+                if (typeof reason.response !== 'undefined' && typeof reason.response.data !== 'undefined' && 'message' in reason.response.data) {
+                    message = reason.response.data.message as string;
                 }
                 ElNotification({
                     title: 'Error',

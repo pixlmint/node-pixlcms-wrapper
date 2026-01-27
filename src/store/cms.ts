@@ -3,32 +3,33 @@ import { buildRequest, send } from "../helpers/xhr";
 import { Backend } from "./backend";
 import { walkPath } from "../helpers/utils";
 import type { INav, NavFactory } from "../contracts/nav";
+import { Entry } from "..";
 
 interface EditorState {
     lastSaved: Date | null,
     editingUnsavedChanges: boolean,
 }
 
-export interface Entry {
-    raw_content: string,
-    content: string,
-    id: string,
-    url: string,
-    hidden: boolean,
-    meta: EntryMeta,
-    file: string,
-}
-
-export interface EntryMeta {
-    title: string,
-    date_formatted: string,
-    description: string | null,
-    author: string | null,
-    owner: string | null,
-    security: string | null,
-    dateUpdated: string | null,
-    dateCreated: string | null,
-}
+// export interface Entry {
+//     raw_content: string,
+//     content: string,
+//     id: string,
+//     url: string,
+//     hidden: boolean,
+//     meta: EntryMeta,
+//     file: string,
+// }
+//
+// export interface EntryMeta {
+//     title: string,
+//     date_formatted: string,
+//     description: string | null,
+//     author: string | null,
+//     owner: string | null,
+//     security: string | null,
+//     dateUpdated: string | null,
+//     dateCreated: string | null,
+// }
 
 interface State {
     loadedEntries: Entry[],

@@ -1,3 +1,5 @@
+import { Ref } from "vue";
+
 export type EntryKind = 'plain' | 'pdf' | 'ipynb' | 'board' | 'link' | 'card';
 
 export type NavResponseElement = {
@@ -24,18 +26,21 @@ export type INavElement = {
     kind: EntryKind,
     isPublic: boolean,
 
-    rename: () => void,
-    switchSecurity: () => void,
-    delete: () => void,
+    domain?: string,
+    relativeRoot?: string,
+
+    // rename: () => void,
+    // switchSecurity: () => void,
+    // delete: () => void,
 }
 
 export type IFolderNavElement = INavElement & {
-    children: INavElement[],
+    children: INavElement[] | Ref<INavElement[]>,
 
-    getChildren: () => INavElement[],
-    getChild: (id: string) => null | INavElement,
-    addPage: () => void,
-    addSubfolder: () => void,
+    // getChildren: () => INavElement[],
+    // getChild: (id: string) => null | INavElement,
+    // addPage: () => void,
+    // addSubfolder: () => void,
 }
 
 

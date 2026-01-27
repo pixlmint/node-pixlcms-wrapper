@@ -9,27 +9,19 @@
     </div>
 </template>
 
-<script lang="ts">
-import {defineComponent, computed} from "vue";
-import {useDialogStore} from "../store/dialog";
-import {DialogComponent} from "../contracts/DialogComponent";
+<script lang="ts" setup>
+import { computed } from "vue";
+import { useDialogStore } from "../store/dialog";
+import { DialogComponent } from "../contracts/DialogComponent";
 
-export default defineComponent({
-    name: 'Modals',
-    props: ['dialogComponents'],
-    setup(props) {
-        const dialogStore = useDialogStore();
-        const showingDialogs = computed(() => dialogStore.getShowingDialogs.dialogs);
+const dialogStore = useDialogStore();
 
-        const getComponent = (route: string) => {
-            const mapping = props.dialogComponents.find((d: DialogComponent) => d.route === route);
-            return mapping ? mapping.component : null;
-        }
+const props = defineProps<{ dialogComponents: DialogComponent[] }>();
+const showingDialogs = computed(() => dialogStore.showingDialogs.dialogs);
 
-        return {
-            showingDialogs,
-            getComponent,
-        };
-    },
-})
+const getComponent = function(route: string) {
+    const mapping = props.dialogComponents.find((d: DialogComponent) => d.route === route);
+    console.log(mapping);
+    return mapping ? mapping.component : null;
+}
 </script>
