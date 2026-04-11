@@ -12,6 +12,7 @@ import { useBackendStore } from "./store/backend";
 import { walkPath } from "./helpers/utils";
 import { cmsStoreConfig, useCmsStore } from "./store/cms";
 import type { INav, INavElement, IFolderNavElement, EntryKind, NavResponseElement, NavFactory } from "./contracts/nav";
+import { isNavElement } from "./contracts/nav";
 import serviceManager from "./services/pixlcmsService"
 import { PixlCms } from "./services/pixlcmsService";
 import authService, { AuthService } from "./services/authService";
@@ -59,6 +60,7 @@ export {
     // nav
     walkPath,
     INav, INavElement, IFolderNavElement, EntryKind, NavResponseElement, NavFactory,
+    isNavElement,
     // services
     PixlCms,
     serviceManager,

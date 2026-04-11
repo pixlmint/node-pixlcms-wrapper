@@ -34,6 +34,15 @@ export type INavElement = {
     // delete: () => void,
 }
 
+export function isNavElement(item: any) {
+    return typeof(item) !== 'undefined'
+            && typeof(item.title) !== 'undefined'
+            && typeof(item.id) !== 'undefined'
+            && typeof(item.kind) !== 'undefined'
+            && (item.kind in ['plain', 'pdf', 'ipynb', 'board', 'link', 'card'])
+            && typeof(item.isPublic) === 'boolean';
+}
+
 export type IFolderNavElement = INavElement & {
     children: INavElement[] | Ref<INavElement[]>,
 

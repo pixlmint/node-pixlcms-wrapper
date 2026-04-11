@@ -80,9 +80,15 @@ class CmsService extends BaseService {
         const request = this._buildRequest('/api/admin/folder/delete', { entry: folderName }, 'DELETE');
         return send(request);
     }
-    deleteEntry(entry: string) {
+    async deleteEntry(entry: string) {
         const request = this._buildRequest('/api/admin/entry/delete', { entry: entry }, 'DELETE');
-        return send(request);
+        const response = await send(request);
+
+        if (this.nav) {
+            console.log(this.nav.root.children)
+        }
+
+        return response;
     }
     renameEntry(entry: string | Entry, newName: string) {
         const entryId = typeof entry === 'string' ? entry : entry.id;
