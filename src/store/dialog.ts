@@ -1,5 +1,4 @@
 import {defineStore} from "pinia";
-import {isObject} from "lodash";
 import { Callback } from "element-plus";
 
 interface DialogInfo {
@@ -23,6 +22,13 @@ type ShowDialogType = {
     data: null | Object,
     closeCallback: null | Function,
 } | string;
+
+// copied from lodash source
+// https://github.com/lodash/lodash/blob/2b5e6f7399a7b48005140b5d5c6bc6c0e62919a8/dist/lodash.core.js
+const isObject = (value: any) => {
+    const type = typeof value;
+    return value != null && (type == 'object' || type == 'function');
+}
 
 const instanceOfDialogInfo = (dialog: any) => {
     return isObject(dialog) && 'route' in dialog;
