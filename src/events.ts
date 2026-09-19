@@ -9,3 +9,17 @@ export class NavReloadEvent extends Event {
     }
 }
 
+
+export function dispatchNavChanged(entry: string) {
+    const event = new NavChangedEvent(entry);
+    window.dispatchEvent(event);
+}
+
+export class NavChangedEvent extends Event {
+    declare entry: string;
+
+    constructor(entry: string) {
+        super('navchanged', { bubbles: true, cancelable: true });
+        this.entry = entry;
+    }
+}

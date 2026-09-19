@@ -1,7 +1,7 @@
 import { NavFactory, INav } from "../contracts/nav";
 import { BaseService } from "./base";
 import { send } from "../helpers/xhr";
-import { dispatchNavReload } from "../events";
+import { dispatchNavChanged, dispatchNavReload } from "../events";
 import { Entry } from "..";
 
 class CmsService extends BaseService {
@@ -14,7 +14,7 @@ class CmsService extends BaseService {
     }
 
     dumpAlternateContent(page: string | null = null) {
-        const data = {} as {page?: string};
+        const data = {} as { page?: string };
         if (page !== null)
             data.page = page;
         const request = this._buildRequest('/api/admin/alternate/dump-file-into-content', data);
@@ -85,7 +85,21 @@ class CmsService extends BaseService {
         const response = await send(request);
 
         if (this.nav) {
-            console.log(this.nav.root.children)
+            console.log('deleting', entry);
+            function walkTree(parent: { id: string, children: any[] }) {
+                for (let i = 0; i < parent.children.length; i++) {
+                    const child = parent.children[i];
+                    if (child.id === entry || (typeof(child.originalId) !== 'undefined' && child.originalId === entry)) {
+                        parent.children.splice(i, 1);
+                        dispatchNavChanged(parent.id);
+                        return;
+                    } else if (typeof(child.children) !== 'undefined' && child.children.length > 0) {
+                        walkTree(child);
+                    }
+                }
+            }
+
+            walkTree(this.nav.root);
         }
 
         return response;

@@ -37,11 +37,11 @@ const main = {
 };
 
 export {
-    authStoreOptions,
+    // authStoreOptions,
     useBackendStore,
     useLoadingStore,
     useDialogStore,
-    useAuthStore,
+    // useAuthStore,
     useMediaStore,
     useCmsStore,
     cmsStoreConfig,
