@@ -1,65 +1,66 @@
-import { defineStore } from "pinia"
-import { buildRequest, send } from "../helpers/xhr";
-import { Backend } from "./backend";
+import {defineStore} from "pinia"
+import {buildRequest, send} from "../helpers/xhr";
 
 interface State {
     token: string | null,
-    backend?: Backend;
 }
 
-export type AuthStore = ReturnType<typeof useAuthStore>;
+export type AuthStore = {
+    getToken: null|string,
+    setToken: Function,
+    changePassword: Function,
+    requestNewPassword: Function,
+    restorePassword: Function,
+    generateNewToken: Function,
+    login: Function,
+    createAdmin: Function,
+    loadToken: Function,
+    logout: Function,
+    haveEditRights: Function,
+}
 
-export const authStoreOptions = {
+export const useAuthStore = defineStore('authStore', {
     state: (): State => ({
         token: null,
-        backend: undefined,
     }),
     getters: {
         getToken: (state: State) => state.token,
     },
     actions: {
-        _buildRequest: buildRequest,
-        _generateLocalstorageKey(item: string) {
-            if (typeof this.backend === 'undefined') {
-                return item;
-            } else {
-                return `${this.backend.domain}_${item}`;
-            }
-        },
         setToken(token: string) {
             this.token = token;
-            localStorage.setItem(this._generateLocalstorageKey('token'), token.toString());
+            localStorage.setItem('token', token.toString());
         },
         async changePassword(data: object) {
-            const request = this._buildRequest({ url: '/api/auth/change-password', data, method: 'POST' });
+            const request = buildRequest('/api/auth/change-password', data, 'POST');
             const response = await send(request);
             this.token = response.data.token;
         },
         requestNewPassword(data: object) {
-            const request = this._buildRequest({ url: '/api/auth/request-new-password', data, method: 'POST' });
+            const request = buildRequest('/api/auth/request-new-password', data, 'POST');
             return send(request);
         },
-        async restorePassword(data: { username: string, password1: string, password2: string, token: string }) {
-            const request = this._buildRequest({ url: '/api/auth/restore-password', data, method: 'POST' });
+        async restorePassword(data: {username: string, password1: string, password2: string, token: string}) {
+            const request = buildRequest('/api/auth/restore-password', data, 'POST');
             const response = await send(request);
             this.token = response.data.token;
         },
         async generateNewToken() {
-            const request = this._buildRequest({ url: '/api/auth/generate-new-token', data: {}, method: 'POST' });
+            const request = buildRequest('/api/auth/generate-new-token', {}, 'POST');
             const response = await send(request);
             this.setToken(response.data.token);
         },
-        async login(data: { username: string, password: string }) {
-            const request = this._buildRequest({ url: '/api/auth/login', data, method: 'POST' });
+        async login(data: object) {
+            const request = buildRequest('/api/auth/login', data, 'POST');
             const response = await send(request);
             this.setToken(response.data.token);
         },
         createAdmin(data: object) {
-            const request = this._buildRequest({ url: '/api/auth/create-admin', data: data, method: 'POST' });
+            const request = buildRequest('/api/auth/create-admin', data, 'POST');
             return send(request);
         },
         loadToken() {
-            const token = localStorage.getItem(this._generateLocalstorageKey('token'));
+            const token = localStorage.getItem('token');
             if (token) {
                 this.token = token;
             }
@@ -67,21 +68,18 @@ export const authStoreOptions = {
         },
         logout(logoutEverywhere: boolean = false) {
             if (logoutEverywhere) {
-                const request = this._buildRequest({ url: '/api/auth/destroy-token' });
+                const request = buildRequest('/api/auth/destroy-token');
                 send(request).then(() => {
                     this.token = null;
-                    localStorage.removeItem(this._generateLocalstorageKey('token'));
+                    localStorage.removeItem('token');
                 });
             } else {
                 this.token = null;
-                localStorage.removeItem(this._generateLocalstorageKey('token'));
+                localStorage.removeItem('token');
             }
         },
         haveEditRights() {
             return this.token !== null;
         },
     },
-}
-
-export const useAuthStore = defineStore('authStore', authStoreOptions);
-
+})

@@ -1,36 +1,42 @@
-import axios, { AxiosRequestHeaders, type AxiosError, type AxiosRequestConfig, type AxiosResponse } from "axios";
-import { queryFormatter } from "./utils";
+import axios, {type AxiosError, type AxiosRequestConfig, type AxiosResponse} from "axios";
+import {queryFormatter} from "./utils";
 import LoadingHelper from "./loading";
-import { ElNotification } from "element-plus";
+import {ElNotification} from "element-plus";
 import { type LoadingStore } from '../store/loading';
+import { type AuthStore } from '../store/auth';
 
 const updateSpeed = 10;
 
-let loadingBarInterval: number | null = null;
+let loadingBarInterval: number|null = null;
 
-let loadingStore: LoadingStore | null = null;
+let authStore: AuthStore|null = null;
+let loadingStore: LoadingStore|null = null;
 
-const runningRequests: Record<string, Promise<any>> = {};
-
-export function configureStores(newLoadingStore: any) {
+export function configureStores(newAuthStore: any, newLoadingStore: any) {
+    authStore = newAuthStore;
     loadingStore = newLoadingStore;
 }
 
-export function buildRequest(
-    url: string,
-    data: Object = {},
-    method: 'GET' | 'POST' | 'DELETE' | 'PATCH' | 'PUT' = 'GET',
-): AxiosRequestConfig & { headers: AxiosRequestHeaders } {
+export function buildRequest(url: string, data: object = {}, method: string = 'GET'): AxiosRequestConfig {
+    if (authStore === null || loadingStore === null) {
+        throw "Stores must be defined";
+    }
     method = method.toUpperCase();
     const request = {
         url: url,
         method: method,
         data: data,
         headers: {},
-        validateStatus: function(status) {
+        validateStatus: function (status) {
             return status >= 200 && status < 300;
         },
-    } as AxiosRequestConfig & { headers: AxiosRequestHeaders };
+    } as AxiosRequestConfig;
+    if (!request.headers) {
+        throw "Headers not defined";
+    }
+    if (authStore.getToken !== null) {
+        request.headers['pixltoken'] = authStore.getToken;
+    }
     if (method === 'GET') {
         request.url = url + '?' + queryFormatter(data);
     } else {
@@ -46,7 +52,7 @@ export function buildRequest(
 }
 
 function clearProgressBar() {
-    if (loadingStore === null) return;
+    if (loadingStore === null) throw "loadingStore is undefined";
     if (loadingBarInterval === null) throw "loadingBarInterval is null";
     const estimated = loadingStore.getEstimatedProgress;
     if (estimated >= 100) {
@@ -59,7 +65,7 @@ function clearProgressBar() {
 }
 
 function updateLoadingProgress() {
-    if (loadingStore === null) return;
+    if (loadingStore === null) throw "loadingStore undefined";
     if (loadingBarInterval === null) throw "loadingBarInterval is null";
     loadingStore.increaseTimePassed(updateSpeed);
     const newProgress = 100 / loadingStore.getLoadingTime * loadingStore.getTimePassed;
@@ -71,10 +77,7 @@ function updateLoadingProgress() {
     }
 }
 
-export async function send(request: AxiosRequestConfig, suppressWarnings: boolean = false) {
-    if (request.method === 'GET' && request.url! in runningRequests) {
-        return runningRequests[request.url!];
-    }
+export function send(request: AxiosRequestConfig) {
     const startTime = new Date();
     if (loadingStore !== null) {
         loadingStore.increaseLoadingCount();
@@ -83,7 +86,7 @@ export async function send(request: AxiosRequestConfig, suppressWarnings: boolea
             loadingBarInterval = window.setInterval(updateLoadingProgress, updateSpeed);
         }
     }
-    const promise = axios(request)
+    return axios(request)
         .then((response: AxiosResponse) => {
             if (loadingStore !== null) {
                 loadingStore.decreaseLoadingCount();
@@ -91,37 +94,26 @@ export async function send(request: AxiosRequestConfig, suppressWarnings: boolea
             const endTime = new Date();
             const diff = endTime.getSeconds() - startTime.getSeconds();
             LoadingHelper.updateAverageLoadingTime(request.url, diff);
-            if (request.url! in runningRequests) {
-                delete runningRequests[request.url!];
-            }
             return response;
         })
         .catch((reason: AxiosError) => {
-            if (!suppressWarnings) {
-                let message = 'Error Sending Request to ' + request.url;
-                if (typeof reason.response !== 'undefined' && typeof reason.response.data !== 'undefined' && 'message' in reason.response.data) {
-                    message = reason.response.data.message as string;
-                }
-                ElNotification({
-                    title: 'Error',
-                    message: message,
-                    type: 'warning',
-                });
+            let message = 'Error Sending Request to ' + request.url;
+            // @ts-ignore
+            if ('message' in reason.response.data) {
+                // @ts-ignore
+                message = reason.response.data.message;
             }
+            ElNotification({
+                title: 'Error',
+                message: message,
+                type: 'warning',
+            });
             if (loadingStore !== null) {
                 loadingStore.decreaseLoadingCount();
                 if (loadingStore.getLoadingTime === 0) {
                     if (loadingBarInterval !== null) window.clearInterval(loadingBarInterval);
                 }
             }
-            if (request.url! in runningRequests) {
-                delete runningRequests[request.url!];
-            }
             throw reason;
         });
-    if (request.method === 'GET') {
-        runningRequests[request.url!] = promise;
-    }
-
-    return promise;
 }

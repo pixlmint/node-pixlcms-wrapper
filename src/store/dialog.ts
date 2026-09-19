@@ -21,7 +21,7 @@ interface State {
 type ShowDialogType = {
     route: string,
     data: null | Object,
-    closeCallback?: null | Function,
+    closeCallback: null | Function,
 } | string;
 
 const instanceOfDialogInfo = (dialog: any) => {

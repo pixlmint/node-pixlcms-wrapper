@@ -6,17 +6,12 @@ export interface PixlEntry {
     hidden: boolean,
     meta: EntryMeta,
     file: string,
-    domain?: string,
-    root?: string,
 }
 
-export interface EntryMeta extends Record<string | number, any> {
+export interface EntryMeta {
     title: string,
     date_formatted: string,
     description: string | null,
     author: string | null,
-    owner: string | null,
-    security: string | null,
-    dateUpdated: string | null | Date,
-    dateCreated: string | null | Date,
+    dateUpdated: string | null,
 }
